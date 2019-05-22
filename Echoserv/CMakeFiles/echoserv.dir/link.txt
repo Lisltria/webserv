@@ -1,1 +1,0 @@
-/usr/bin/cc    CMakeFiles/echoserv.dir/echoserv.c.o CMakeFiles/echoserv.dir/helper.c.o  -o echoserv 

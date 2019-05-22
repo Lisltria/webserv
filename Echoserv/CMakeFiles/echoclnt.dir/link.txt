@@ -1,1 +1,0 @@
-/usr/bin/cc    CMakeFiles/echoclnt.dir/echoclnt.c.o CMakeFiles/echoclnt.dir/helper.c.o  -o echoclnt 

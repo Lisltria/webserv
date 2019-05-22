@@ -1,0 +1,4 @@
+/home/pip/Project/webserv/CMakeFiles/rebuild_cache.dir
+/home/pip/Project/webserv/CMakeFiles/edit_cache.dir
+/home/pip/Project/webserv/CMakeFiles/echoserv.dir
+/home/pip/Project/webserv/CMakeFiles/echoclnt.dir

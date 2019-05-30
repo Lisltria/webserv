@@ -73,15 +73,10 @@ int main(int argc, char* argv[]){
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, list_s, &event);
 
 	Eventlist events(16);
-	struct sockaddr_in peeraddr;
-	socklen_t peerlen;
-	int conn;
-	int i;
 	int count = 0;
-	int nready;
-
 
 	while(1){
+		int nready;
 		nready = epoll_wait(epollfd, &*events.begin(), static_cast<int>(events.size()),-1);
 		if(nready == -1){
 			if(errno == EINTR){
@@ -97,27 +92,34 @@ int main(int argc, char* argv[]){
 			events.resize(nready * 2);
 		}
 
-		for(i = 0; i < nready; i++){
+		for(int i = 0; i < nready; i++){
 			if(events[i].data.fd == list_s){
+				int conn;
+				struct sockaddr_in peeraddr;
+				socklen_t peerlen;
+
 				peerlen = sizeof(peeraddr);
-			
 				conn = accept(list_s, (struct sockaddr *)&peeraddr, &peerlen);
+				printf("A new connect from listen : %d\n", list_s);
 				if(conn == -1) exit(EXIT_FAILURE);
 				printf("ip = %s, port = : %d\n", inet_ntoa(peeraddr.sin_addr), 
 												 ntohs(peeraddr.sin_port));
 				printf("cnt = :%d\n", ++count);
 				clients.push_back(conn);
-				activate_nonblock(conn);
+				activate_nonblock(conn);			//非阻塞io
 				event.data.fd = conn;
 				event.events = EPOLLIN | EPOLLET;
 				epoll_ctl(epollfd, EPOLL_CTL_ADD, conn, &event);
 			}
 			else if(events[i].events & EPOLLIN){
+				int conn;
 				conn = events[i].data.fd;
 				if( conn < 0)continue;
+				printf("A new data from %d\n", conn);
 
 				char recvbuf[1024] = {0};
 				int ret = Readline(conn, recvbuf, 1024);
+
 				if(ret == -1){
 					ERR_EXIT("readline\n");
 				}
@@ -130,6 +132,7 @@ int main(int argc, char* argv[]){
 					clients.erase(
 							std::remove(clients.begin(), clients.end(), conn), 
 							clients.end());
+					continue;
 				}
 
 				fputs(recvbuf, stdout);
@@ -138,28 +141,6 @@ int main(int argc, char* argv[]){
 		}
 
 	}
-/*
-
-	int pid;
-	while(1){
-		// Wait for a connetion, then accept() it
-		
-		if( (conn_s = accept(list_s, NULL, NULL)) < 0){
-			fprintf(stderr, "Error:Error accept().\n");
-			exit(EXIT_FAILURE);
-		}
-		//为每个accept打开一个新进程
-		if( ( pid = fork() ) == 0){
-			printf("Now pid is: %d\n",getpid());
-			Readline(conn_s, buffer, MAX_LINE - 1);
-			Writeline(conn_s, buffer, strlen(buffer));
-
-			if(close(conn_s) < 0){
-				fprintf(stderr, "Error: Error close().\n");
-				exit(EXIT_FAILURE);
-			}
-		}
-		else continue;
-	}*/
+	close(list_s);
 	return 1;
 }

@@ -88,6 +88,7 @@ bool threadpool::threadpool_add(void (*function)(void *), void *argument, bool f
 
 bool threadpool::threadpool_destrory(bool flag){
 	bool ret = true;
+	if(shutdown)return false;
 	if(pthread_mutex_lock(&mutexlock) != 0){
 		return false;
 	}

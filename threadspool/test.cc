@@ -18,7 +18,8 @@ int main(){
 		cout << "fail2" << endl;
 	if(!poolx->threadpool_add(&fun2, NULL, true))
 		cout << "fail3" << endl;
-	sleep(1);	
+	sleep(1);
+	poolx->~threadpool();	
 	delete poolx;
 	poolx = NULL;
 	

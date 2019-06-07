@@ -15,6 +15,6 @@
 	}while(0)
 
 void activate_nonblock(int fd);
-void deactive_nonblock(int fd);
+void deactivate_nonblock(int fd);
 
 #endif
